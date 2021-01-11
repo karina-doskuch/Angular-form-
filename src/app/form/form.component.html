@@ -1,0 +1,30 @@
+<form #userForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="mb-3">
+        <label for="name">Name:</label>
+            <input id="name "class="form-control" name="name" type="text" #name="ngModel"
+            required
+            minlength="4"
+            maxlength="10"
+            [(ngModel)]="model.name"> 
+    <div *ngIf="formErrors.name" class="alert alert-danger">{{formErrors.name}}</div>  
+    </div>
+
+    <div class="mb-3">
+        <label for="age">Age:</label>
+            <input id="age" class="form-control" name="age" type="number" required #age="ngModel"
+            [(ngModel)]="model.age">        
+    <div *ngIf="formErrors.age" class="alert alert-danger">{{formErrors.age}}</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="role">Role: </label>
+        <select id="role" class="form-control" name="role" required
+         [(ngModel)]="model.role">
+        <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+     </select>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid">Submit</button>
+    </div> 
+   </form>
+
