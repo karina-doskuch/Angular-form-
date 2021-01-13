@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../user';
 
 @Component({
@@ -7,32 +7,56 @@ import { User } from '../user';
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent implements OnInit, AfterViewInit {
+export class FormComponent implements OnInit {
 
+  userForm: FormGroup;
+
+  user: User = new User(1, null, null, null, null, null);
   roles: string[] = ['Guest', 'Moderator', 'Administrator'];
-  model: User = new User(1, '', '', null);
 
-  formErrors = { name: '', age: '' };
+  formErrors = { login: '', password: '', email: '', age: '', role: '' };
 
   validationMessages = {
-    name: {
-      required: 'Name is required.',
-      minlength: 'Name must be at least 4 characters long.'
+    login: {
+      required: 'Имя обязательно',
+      minlength: 'Имя должно содержать не менее 4 символов',
+      maxlength: 'Имя должно содержать не более 15 символов'
+    },
+    password: {
+      required: 'Пароль обязателен',
+      minlength: 'Пароль  должен содержать не менее 7 символов',
+      maxlength: 'Пароль  должен содержать не более 25 символов'
+    },
+    email: {
+      required: 'Email обязателен',
+      pattern: 'Неправильный формат email адреса'
     },
     age: {
-      required: 'Age is required.'
+      required: 'Возраст  обязателен',
+      pattern: 'Значение должно быть целым числом'
+    },
+    role: {
+    required: 'Обязательное поле'
     }
   };
 
-  @ViewChild('userForm ') userForm: NgForm;
-
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder) { 
   }
 
-  ngAfterViewInit(): void {
-    this.userForm.valueChanges.subscribe(_ => this.onValueChanges());
+  ngOnInit(): void {
+  this.buildForm();
+  }
+
+  buildForm(): void {
+    this.userForm = this.fb.group( {
+      login: [this.user.login, [Validators.required, Validators.minLength(4), Validators.maxLength(15)]],
+      password: [this.user.password, [Validators.required, Validators.minLength(7), Validators.maxLength(25)]],
+      email: [this.user.email, [Validators.required, Validators.pattern('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$')]],
+      age: [this.user.age, [Validators.required, Validators.pattern('^\\d+')]],
+      role: [this.user.role, Validators.required],
+    });
+
+    this.userForm.valueChanges.subscribe( _ => this.onValueChanges());
   }
 
   onValueChanges(): void {
@@ -40,13 +64,13 @@ export class FormComponent implements OnInit, AfterViewInit {
       return; 
     }
 
-    const form = this.userForm.form;
+    const form = this.userForm;
 
     for (const field in this.formErrors) {
       this.formErrors[field] = '';
       const control = form.get(field);
 
-      if (control && control.dirty && !control.invalid) {
+      if (control && control.dirty && control.invalid) {
         const message = this.validationMessages[field];
 
         for (const key in control.errors) {
@@ -56,7 +80,22 @@ export class FormComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSubmit(): void {
-    console.log('Form submitted');
+  onSubmit(form): void {
+    console.log('isvalid:', form.valid);
   }
 }
+
+
+ 
+
+
+
+ 
+
+ 
+
+
+
+ 
+
+  
