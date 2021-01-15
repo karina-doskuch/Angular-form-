@@ -4,5 +4,6 @@ constructor(public id: number,
             public password: string,
             public email: string,
             public age: number,
+            public site: string,
             public role: string) { }
 }
